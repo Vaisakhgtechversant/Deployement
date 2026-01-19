@@ -1,11 +1,19 @@
-import React from 'react'
+import React from 'react';
+import { FaBars } from 'react-icons/fa';
 
-const Navbar = () => {
+const Navbar = ({ onMenuClick }) => {
   return (
-    <div>
-        <h1 className='text-3xl font-bold bg-amber-300 p-4'>Navbar</h1>
-    </div>
-  )
-}
+    <div className="flex justify-between items-center bg-amber-300 p-4">
+      <button onClick={onMenuClick} className="text-2xl">
+        <FaBars />
+        
+      </button>
+      <h1 className="text-2xl font-bold">Food App</h1>
 
-export default Navbar
+
+
+    </div>
+  );
+};
+
+export default Navbar;
