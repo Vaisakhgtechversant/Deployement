@@ -2,8 +2,11 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginWrapper from '../Components/LoginWrapper';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 
-const Login = ({pageTitle, apiurl}) => {console.log(apiurl);
+const Login = ({ pageTitle, apiurl }) => {
+  console.log(apiurl);
 
   const navigate = useNavigate();
 
@@ -38,6 +41,27 @@ const Login = ({pageTitle, apiurl}) => {console.log(apiurl);
       navigate("/viewdata");
     } catch (error) {
       alert("Server not reachable");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      // Trigger Firebase Google Sign-In popup
+      const result = await signInWithPopup(auth, googleProvider);
+      // Get the ID token from Firebase
+      const token = await result.user.getIdToken();
+
+      // Send token to our Node.js backend to verify and create session
+      const response = await axios.post('http://localhost:8000/api/google-login', {
+        idToken: token
+      });
+
+      console.log(response.data);
+      alert("Google SSO Successful");
+      navigate("/viewdata");
+    } catch (error) {
+      console.error("Google SSO Error:", error);
+      alert("Google Sign-In failed or server not reachable");
     }
   };
 
@@ -77,6 +101,17 @@ const Login = ({pageTitle, apiurl}) => {console.log(apiurl);
               className="bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600 transition-colors"
             >
               Login
+            </button>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="bg-white text-gray-800 font-semibold py-2 px-4 shadow rounded hover:bg-gray-100 transition-colors w-full flex items-center justify-center gap-2"
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" className="w-5 h-5" />
+              Sign in with Google
             </button>
           </div>
 
